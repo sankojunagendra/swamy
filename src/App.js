@@ -29,7 +29,7 @@ class App extends React.Component {
     }
     return false;
   };
-  
+
   handleAddNote = async event => {
       const { name, notes } = this.state;
       event.preventDefault() // this will prevent the default action of submitting a form which is to reload the page
@@ -52,7 +52,7 @@ class App extends React.Component {
     const deletedNoteId = result.data.deleteNote.id;
     const updatedNotes = notes.filter(note => note.id !== deletedNoteId )
     this.setState({ notes: updatedNotes })
-  };
+  }; 
 
   handleSetNote = ({ name, id }) => {
     this.setState({ name, id})
@@ -70,7 +70,6 @@ class App extends React.Component {
       ...notes.slice(index + 1)
     ]
     this.setState({ notes: updatedNotes, name: "", id: ""})
-    
   }
    
   render() {
