@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+// import App from './App';
+import App from './AppHooks';
 import * as serviceWorker from './serviceWorker';
 
 // Configuring Amplify in our project

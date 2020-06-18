@@ -46,7 +46,7 @@ class App extends React.Component {
     //     }
     // })
   };
-
+  
   // componentWillUnmount() {
   //   this.createNoteListener.unsubscribe();
   //   this.deleteNoteListener.unsubscribe();
@@ -112,7 +112,7 @@ class App extends React.Component {
     ]
     this.setState({ notes: updatedNotes, name: "", id: ""})
   }
-  
+
   signOut = async () => {
     try {
       await Auth.signOut();
