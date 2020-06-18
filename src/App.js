@@ -1,23 +1,74 @@
 import React from 'react'
-import { API, graphqlOperation } from 'aws-amplify'
+import { API, graphqlOperation, Auth } from 'aws-amplify'
 import { withAuthenticator } from '@aws-amplify/ui-react'
 import { createNote, deleteNote, updateNote } from './graphql/mutations'
 import { listNotes } from './graphql/queries'
+//import { onCreateNote, onDeleteNote, onUpdateNote } from './graphql/subscriptions'
 
 class App extends React.Component {
   state = {
     id: "",
     name: "",
-    notes: []
+    notes: [],
+    owner:""
+  };
+  
+  componentDidMount() {
+    this.getOwner();
+    this.getNotes();
+    // this.createNoteListener = API.graphql(graphqlOperation(onCreateNote)).subscribe(
+    //   {
+    //     next: noteData => {
+    //       const newNote = noteData.value.data.onCreateNote;
+    //       const prevNotes = this.state.notes.filter(note => note.id !== newNote.id);
+    //       const updatedNotes = [...prevNotes, newNote];
+    //       this.setState({ notes: updatedNotes});
+    //   }
+    // });
+    // this.deleteNoteListener = API.graphql(graphqlOperation(onDeleteNote)).subscribe(
+    //   {
+    //     next: noteData => {
+    //       const deletedNote = noteData.value.data.onDeleteNote;
+    //       const updatedNotes = this.state.notes.filter(note => note.id !== deletedNote.id);
+    //       this.setState({ notes: updatedNotes});
+    //     }
+    // });
+    // this.updateNoteListener = API.graphql(graphqlOperation(onUpdateNote)).subscribe(
+    //   {
+    //     next: noteData => {
+    //       const { notes } = this.state;
+    //       const updatedNote = noteData.value.data.onUpdateNote;
+    //       const index = notes.findIndex(note => note.id === updatedNote.id);
+    //       const updatedNotes = [
+    //         ...notes.slice(0, index),
+    //         updatedNote,
+    //         ...notes.slice(index + 1)
+    //       ]
+    //       this.setState({ notes: updatedNotes, name: "", id: ""})
+    //     }
+    // })
   };
 
-  async componentDidMount() {
+  // componentWillUnmount() {
+  //   this.createNoteListener.unsubscribe();
+  //   this.deleteNoteListener.unsubscribe();
+  //   this.updateNoteListener.unsubscribe();
+  // };
+
+  getOwner = async () => {
+    const result = await Auth.currentAuthenticatedUser();
+    const owner = result.username;
+    this.setState({ owner });
+    console.log(this.state.owner);
+  }
+  
+  getNotes = async () => {
     const result = await API.graphql(graphqlOperation(listNotes))
     this.setState({ notes: result.data.listNotes.items})
-  };
-
+  }
+  
   handleChangeNote = event => {
-      this.setState({ name: event.target.value})
+    this.setState({ name: event.target.value})
   };
 
   hasExistingNote = () => {
@@ -31,13 +82,13 @@ class App extends React.Component {
   };
 
   handleAddNote = async event => {
-      const { name, notes } = this.state;
+      const { name, notes, owner } = this.state;
       event.preventDefault() // this will prevent the default action of submitting a form which is to reload the page
       // check if we have an existing note, if so update it
       if(this.hasExistingNote()) {
           this.handleUpdateNote()
       } else {
-          const input = { name }
+          const input = { name, owner }
           const result = await API.graphql(graphqlOperation(createNote, { input }))
           const newNote = result.data.createNote
           const updatedNotes = [newNote, ...notes]
@@ -71,11 +122,20 @@ class App extends React.Component {
     ]
     this.setState({ notes: updatedNotes, name: "", id: ""})
   }
-   
+  
+  signOut = async () => {
+    try {
+      await Auth.signOut();
+    } catch (error) {
+      console.log("error signing out :", error);
+    }
+  }
+  
   render() {
     const { notes, name, id } = this.state;
     return(
       <div className="flex flex-column items-center justify-center pa3 bg-washed-red">
+        <button onClick={this.signOut} className="pa2 f6 b--dark-blue bw1 ph3 pv2 bg-light-blue">Sign Out</button>
         <h1 className="code f2-l">Amplify Notetaker</h1>
         {/* Note form*/}
         <form onSubmit={this.handleAddNote} className="mb3">

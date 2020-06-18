@@ -1,5 +1,11 @@
-type Note @model {
+type Note @model 
+          @auth(
+            rules: [
+              { allow: owner, operations: [ create, read, update, delete] },
+            ])
+  {
   id: ID!
   name: String!
   description: String
+  owner: String!
 }
