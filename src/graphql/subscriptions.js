@@ -7,9 +7,9 @@ export const onCreateNote = /* GraphQL */ `
       id
       name
       description
-      owner
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -19,9 +19,9 @@ export const onUpdateNote = /* GraphQL */ `
       id
       name
       description
-      owner
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -31,9 +31,9 @@ export const onDeleteNote = /* GraphQL */ `
       id
       name
       description
-      owner
       createdAt
       updatedAt
+      owner
     }
   }
 `;

@@ -10,11 +10,9 @@ class App extends React.Component {
     id: "",
     name: "",
     notes: [],
-    owner:""
   };
   
   componentDidMount() {
-    this.getOwner();
     this.getNotes();
     // this.createNoteListener = API.graphql(graphqlOperation(onCreateNote)).subscribe(
     //   {
@@ -54,14 +52,6 @@ class App extends React.Component {
   //   this.deleteNoteListener.unsubscribe();
   //   this.updateNoteListener.unsubscribe();
   // };
-
-  getOwner = async () => {
-    const result = await Auth.currentAuthenticatedUser();
-    const owner = result.username;
-    this.setState({ owner });
-    console.log(this.state.owner);
-  }
-  
   getNotes = async () => {
     const result = await API.graphql(graphqlOperation(listNotes))
     this.setState({ notes: result.data.listNotes.items})
@@ -82,13 +72,13 @@ class App extends React.Component {
   };
 
   handleAddNote = async event => {
-      const { name, notes, owner } = this.state;
+      const { name, notes } = this.state;
       event.preventDefault() // this will prevent the default action of submitting a form which is to reload the page
       // check if we have an existing note, if so update it
       if(this.hasExistingNote()) {
           this.handleUpdateNote()
       } else {
-          const input = { name, owner }
+          const input = { name }
           const result = await API.graphql(graphqlOperation(createNote, { input }))
           const newNote = result.data.createNote
           const updatedNotes = [newNote, ...notes]
